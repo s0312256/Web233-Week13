@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <link rel="stylesheet" href="style.css">
+    <p><strong><br>Accessing On: </strong><p>
+    <p id="demo"></p>
+    <script>
+     var d = new Date();
+     var n = d.toLocaleDateString();
+     document.getElementById("demo").innerHTML = n;
+    </script>
+    <script src="script.js"></script>
+
+    
+  </head>
+
+  <body>
+    <h1>Shopping List: Version 4.0</h1>
+
+     Item: &nbsp;&nbsp;<input type="text" id="item" name="item" /><br><br>
+     Cost: &nbsp;&nbsp;<input type="text" id="cost" name="cost" />
+      <input class="button" name="submit" type="button" value="Add Item" onclick="addShoppinglist(item.value, cost.value)" />
+    <p id="MyList"></p>
+    <p id="MyCart"></p>
+
+  </body>
+
+</html>
