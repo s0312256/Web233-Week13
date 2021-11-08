@@ -2,9 +2,11 @@
 body
 {
     max-width: 100%;
-    margin: auto;
+    margin: 25%;
     color: #43593F;
     background-color: #EFD9D1;
+    outline-style: double;
+    outline-color: #919F89;
 }
 h1
 {
