@@ -7,10 +7,14 @@ body
     background-color: #EFD9D1;
     outline-style: double;
     outline-color: #919F89;
+    outline-width: 15px;
 }
 h1
 {
     color: #919F89;
+    outline-style: double;
+    outline-color: #919F89;
+    outline-width: 15px;
 }
 
 input
