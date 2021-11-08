@@ -4,12 +4,77 @@
 //Fall 2021
 
 
-//v 4.0 read cookie on load and display
+//v3.4 Add popup describing app when visitors load webpage the first time
 window.onload = function() {
-  populateshoppinglistonload();
-   displayShoppinglists();
+    alert("Welcome to 'Shopping List' App!\n\nCreated by Rock Valley College\n**Javascript(Web233) Students**\n\nQuestions?\nemail Professor Chuck Konkol\nc.konkol@rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
+    populateshoppinglistonload();
+    displayShoppinglists();
+    clearFocus();
 };
 
+//v 4.0 save / get array via cookies
+//v 4.0 read cookie on load and display
+
+//v4.1 get values via URL
+function get(name){
+    var url = window.location.search;
+    var num = url.search(name);
+    var namel = name.length;
+    var frontlength = namel+num+1; //length of everything before the value
+    var front = url.substring(0, frontlength);
+    url = url.replace(front, "");
+    num = url.search("&");
+    if(num>=0) return url.substr(0,num);
+    if(num<0)  return url;
+}
+//v4.1 ShareList via bitly api
+function passlist()
+{
+ var url = "https://rvclist.github.io/index.html?list="+ shoppinglist;
+    var accessToken = "eff66075988ab2f610fba18455b493ce90540381";
+
+    var params = {
+        "long_url" : url           
+    };
+
+    $.ajax({
+        url: "https://api-ssl.bitly.com/v4/shorten",
+        cache: false,
+        dataType: "json",
+        method: "POST",
+        contentType: "application/json",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+        },
+        data: JSON.stringify(params)
+    }).done(function(data) {
+        //alert(data.link);
+         getshorturl = 1;
+         document.getElementById("sharelist").innerHTML = 'Share List:\n' + data.link;
+         copyToClipboard(data.link);
+    }).fail(function(data) {
+        //alert(data.link);
+      document.getElementById("sharelist").innerHTML = 'Share List:\n' + url;
+      //copyToClipboard("sharelist");
+      copyToClipboard(url);
+      //alert("ShoppingList URL Copied");
+    });
+}
+//vFinal share function
+function share()
+{
+   passlist();
+}
+//v4.1 prompt message to copy URL
+function copyToClipboard(text) {
+   window.prompt("Copy & Share List!", text);
+}
+
+function about()
+{
+    alert("Welcome to 'Shopping List' App!\n\nCreated by Rock Valley College\n**Javascript(Web233) Students**\n\nQuestions?\nemail Professor Chuck Konkol\nc.konkol@rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
+    
+}
 //read cookie and return
 function readCookie(name) {
     var nameEQ = name + "=";
@@ -28,8 +93,11 @@ function remove_unwanted(str) {
   if ((str===null) || (str===''))  
        return false;  
  else  
-   str = str.toString();  
-   str = str.replace(/%20/g, "");
+   str = str.toString();
+    //clean space
+   str = str.replace(/%20/g, " ");
+    //clean !
+    str = str.replace(/%21/g, "!");
    str = str.replace(/%24/g, "$"); 
    str = str.replace(/%7C/g, " | ");
   return str.replace(/[^\x20-\x7E]/g, '');  
@@ -62,10 +130,17 @@ function populateshoppinglistonload()
   //remove unwanted chars and format
   y = remove_unwanted(y); 
   //spit array by comma %2C
-  y = y.split('%2C');
-  if (y) {
-    shoppinglist = y;
-   }
+  
+   //v 4.1 get URL
+  var geturllistvalue = get("list");
+    if (geturllistvalue) {
+        geturllistvalue = remove_unwanted(geturllistvalue);
+      geturllistvalue = geturllistvalue.split(',');
+      shoppinglist = geturllistvalue;
+  }else if (y){
+       y = y.split('%2C');
+      shoppinglist = y;
+  }
 }
 
 
@@ -129,6 +204,7 @@ function addbacktoshoppinglist(item,num) {
 
 //v 3.1 Update function addShoppinglist by adding objects
 function addtoshopcart(item, num) {
+    document.getElementById("sharelist").innerHTML = ' ';
     deleteShoppinglists(num);
     addtocart.push(item);
   //display shoppinglist
@@ -142,30 +218,13 @@ function addtoshopcart(item, num) {
 }
 
 //v 3.1 Update function addShoppinglist by adding objects
-function addShoppinglist(item,cost) {
+function addShoppinglist(item) {
   //v 3.0 declare variable for groc string
-  var groc="";
-  //v 3.0 v 3.0 declare variable for loop count
-  var count=0;
-  //v 3.0 edit value for MyItems.name
-  MyItems.name=item;
-  //v 3.0 edit value for MyItems.cost
-  MyItems.price=cost;
-  //v 3.0 for loop through object propterties and 
-  for (var x in MyItems){
-    if (count===1){
-      groc += "$";
-    }
-    //add to groc string from object array item
-    groc += MyItems[x];
-    if (count===0){
-      groc += " | ";
-    }
-    //increment count by 1
-   count++;
-  }
   //push to shoppinglist
-  shoppinglist.push(groc);
+  if (item != "")
+  {
+  document.getElementById("sharelist").innerHTML = ' ';
+  shoppinglist.push(item);
   //display shoppinglist
   displayShoppinglists();
 //v3.1 display displayShoppingCart() 
@@ -173,29 +232,36 @@ function addShoppinglist(item,cost) {
   clearFocus();
   //v 4.0 save cookie
   savecookie();
+  }else
+  {
+  alert("Item Description Required: Please enter now :)");
+  clearFocus();
+  }
 }
 
 function clearFocus()
 {
   document.getElementById("item").value = "";
-   document.getElementById("cost").value = "";
+ //  document.getElementById("cost").value = "";
   document.getElementById("item").focus();
 }
 
 
 //v 3.1: update function displayShoppinglists() to add to cart 
 function displayShoppinglists() {
+document.getElementById("MyList").innerHTML = '';
 var TheList = "";
 var TheRow = "";
 var arrayLength = shoppinglist.length;
 for (var i = 0; i < shoppinglist.length; i++) {
   //v 3.1 change button name to btndelete
-var btndelete =  ' <input class="button" id="remove" name="delete" type="button" value="Remove Item" onclick="deleteShoppinglists(' + i + ')" />';
+var btndelete =  ' <input class="button" id="remove" name="delete" type="button" value="Remove" onclick="deleteShoppinglists(' + i + ')" />';
 var btnupdate =  ' <input class="button" name="edit" type="button" value="Edit Item" onclick="changeShoppinglist(' + i + ')" />';
 //v 3.1 add edit button using below i index & name it btnpdate
 var arrays = shoppinglist[i];
 arrays = "'"+arrays+"'";
-var btnaddcart =  '<label><input name="add" type="checkbox" id="adds" value="Add to Shopping Cart" onclick="addtoshopcart('+arrays+','+ i +')" />Add</label>';
+var btnaddcart =  '<input name="add" type="checkbox" id="adds" value="Add to Shopping Cart" onclick="addtoshopcart('+arrays+','+ i +')" />';
+var btnsharelist = '<input class="button" id="shares" name="shares" type="submit" value="Share Shopping List" onclick="share()" />';
 TheRow = '<li>' + shoppinglist[i] + btndelete + ' '  + btnaddcart + '</li>';
 TheList += TheRow;
 }
@@ -203,39 +269,47 @@ TheList += TheRow;
 if (arrayLength > 0)
 {
   document.getElementById("MyList").innerHTML = '<ul>' + TheList + '</ul>';
+  document.getElementById("sharebutton").innerHTML = btnsharelist;
 }else
 {
-  document.getElementById("MyList").innerHTML = '';
+  document.getElementById("MyList").innerHTML = ' ';
+  document.getElementById("sharebutton").innerHTML = ' ';
+    document.getElementById("sharelist").innerHTML = ' ';
 }
 }
 
 //v3.1
 function displayShoppingCart() {
+document.getElementById("MyCart").innerHTML = ''
 var TheList = "";
 var TheRow = "";
 var arrayLength = addtocart.length;
 for (var i = 0; i < arrayLength; i++) {
   //v 3.1 change button name to btndelete
-var btndelete =  ' <input class="button" id="remove" name="delete" type="button" value="Remove Item" onclick="deleteShoppingCart(' + i + ')" />';
+var btndelete =  ' <input class="button" id="remove" name="delete" type="button" value="Remove" onclick="deleteShoppingCart(' + i + ')" />';
 //v 3.1 add edit button using below i index & name it btnpdate
 var btnupdate =  ' <input class="button" name="edit" type="button" value="Edit Item" onclick="changeShoppingCart(' + i + ')" />';
 var arrays = addtocart[i];
 arrays = "'"+arrays+"'";
 //v 3.1 add edit button using below i index & name it btnpdate
-var btnaddlist =  '<label><input name="add" type="checkbox" id="adds" value="Add to Shopping List" onclick="addbacktoshoppinglist('+arrays+',' + i + ')" checked="checked"/>Add</label>';
-TheRow =  "<li>" + addtocart[i] + btndelete + ' ' +  ' ' + btnaddlist + '<br></li>';
+var btnaddlist =  '<input name="add" type="checkbox" id="adds" value="Add to Shopping List" onclick="addbacktoshoppinglist('+arrays+',' + i + ')" checked="checked"/>';
+TheRow =  "<li>" + addtocart[i] + btndelete + ' ' +  ' ' + btnaddlist + '</li>';
 TheList += TheRow;
 }
 if (arrayLength > 0)
 {
-  document.getElementById("MyCart").innerHTML = 'Shopping Cart ' + '<br><ul>' + TheList + '</ul>';
+  document.getElementById("labels").innerHTML = 'Purchased';
+  document.getElementById("MyCart").innerHTML = '<ul>' + TheList + '</ul>';
 }else{
+  document.getElementById("labels").innerHTML = '';
   document.getElementById("MyCart").innerHTML = '';
+    
 }
 }
 
 //v3.1
 function deleteShoppinglists(position) {
+  document.getElementById("sharelist").innerHTML = ' ';
   shoppinglist.splice(position, 1);
   displayShoppinglists();
   displayShoppingCart();
@@ -244,142 +318,8 @@ function deleteShoppinglists(position) {
 }
 //v3.1
 function deleteShoppingCart(position) {
+  document.getElementById("sharelist").innerHTML = ' ';
   addtocart.splice(position, 1);
   displayShoppinglists();
   displayShoppingCart();
 }
-
-
-
-
-// //v 3.0 Create Objects for Shoppinglist
-// // var MyItems = {
-// //   name:"",
-// //   price:""
-// // };
-
-// // //v 2.1: change shoppinglist array empty array
-// // var shoppinglist = [];
-
-// // //v 2.1 Update function addShoppinglist
-// // //v 3.0 Update function addShoppinglist by adding objects
-// // function addShoppinglist(item,cost) {
-// //   //v 3.0 declare variable for groc string
-// //   var groc="";
-// //   //v 3.0 v 3.0 declare variable for loop count
-// //   var count=0;
-// //   //v 3.0 edit value for MyItems.name
-// //   MyItems.name=item;
-// //   //v 3.0 edit value for MyItems.cost
-// //   MyItems.price=cost;
-// //   //v 3.0 for loop through object propterties and 
-// //   for (var x in MyItems){
-// //     if (count===1){
-// //       groc += "$";
-// //     }
-// //     //add to groc string from object array item
-// //     groc += MyItems[x];
-// //     if (count===0){
-// //       groc += ", ";
-// //     }
-// //     //increment count by 1
-// //    count++;
-// //   }
-// //   //push to shoppinglist
-// //   shoppinglist.push(groc);
-// //   //display shoppinglist
-// //   displayShoppinglists();
-// // //v 2.1: call function 'clearFocus'
-  
-// //   clearFocus();
-// // }
-
-// // //v 2.1 add function 'clearFocus'
-// // function clearFocus()
-// // {
-// //   //v 2.1: clear inputbox value out by id
-// // //v 2.1: http://stackoverflow.com/questions/4135818/how-to-clear-a-textbox-using-javascript
-// //   document.getElementById("item").value = "";
-// // //v 3.0 clear cost field
-// //    document.getElementById("cost").value = "";
-// // //v 2.1: set focus on inputbox after text is cleared
-// // //v 2.1: http://stackoverflow.com/questions/17500704/javascript-set-focus-to-html-form-element
-// //   document.getElementById("item").focus();
-// // }
-
-// // //v 2.1: update function displayShoppinglists() to display shoppinglists
-// // //v 3.0: update function displayShoppinglists() to display shoppinglists & add remove button
-// // function displayShoppinglists() {
-// // //v 2.1: add and initialize variable 'TheList' with empty string 
-// // var TheList = "";
-// // //v 2.1: add and intitialize variable 'arrayLength' with shoppinglist.length
-// // var arrayLength = shoppinglist.length;
-// // //v 2.1: declare a for loop 
-// // //v 2.1: (var i = 0; i < arrayLength; i++) 
-// // //v 2.1: Concatentate TheList with each array item plus <br> tag
-
-// // //v 3.0 add remove button using below i index
-// // //var button =  ' <input class="button" name="delete" //type="button" value="Remove Item" onclick="deleteShoppinglists(' + i + ')" />';
-// // var button = "";
-// // for (var i = 0; i < arrayLength; i++) {
-// //   button =  ' <input class="button" name="delete" type="button" value="Remove Item" onclick="deleteShoppinglists(' + i + ')" />';
-// //   //v 3.0 adding remove button to end of item
-//   TheList = TheList + shoppinglist[i] + button + '<br>';
-// }
-// //v 2.1: Display 'TheList" to document ID 'MyList'
-// document.getElementById("MyList").innerHTML = TheList;
-// }
-
-// function deleteShoppinglists(position) {
-//   shoppinglist.splice(position, 1);
-//   displayShoppinglists();
-// }
-
-// function changeShoppinglist(position, newValue) {
-//   shoppinglist[position] = newValue;
-//   displayShoppinglists();
-// }
-
-//*********************************************
-//comment out unused functions and functions calls used Version 2.0 & 2.1
-//and move to bottom of page
-//*********************************************
-
-//v 2.0: call shoppinglists();
-//displayShoppinglists();
-
-//v 2.0: add function addShoppinglistitem() 
-//v 2.0: adding a shopping list item without argument
-
-//function addShoppinglistitem() {
-//  shoppinglist.push('add new item 4');
-//}
-
-//v 2.0: add function addShoppinglist(item) 
-//v 2.0: for adding a shopping list item with argument
-
-
-//v 2.0: call addShoppinglistitem();
-//addShoppinglistitem();
-
-//call displayShoppinglists();
-//displayShoppinglists();
-
-//v 2.0: call addShoppinglist('add new item 5');
-//addShoppinglist('add new item 5');
-
-//v 2.0: v 2.0: add function changeShoppinglist(position, newValue)
-//v 2.0: function for changing a Shoppinglists given position
-
-//v 2.0: Call changeShoppinglist(0, 'changed item 1');
-//changeShoppinglist(0, 'changed item 1');
-
-//v 2.0: add function deleteShoppinglists(position) 
-//v 2.0: function for deleting a Shoppinglists item
-
-//v 2.0: Call: addShoppinglist('add new item 6');
-//addShoppinglist('add new item 6');
-//v 2.0: v 2.0: Call: changeShoppinglist(5, 'changed item 6');
-//changeShoppinglist(5, 'changed item 6');
-//v 2.0: Call: deleteShoppinglists(5);
-//deleteShoppinglists(5);
