@@ -14,8 +14,8 @@ window.onload = function() {
 
 function passlist()
 {
-var url = "YOURGITHUBURL/index.html?list="+ shoppinglist;   //replace YOURGITHUBURL with your Github repo URL example: Konkollist.github.io
-   var accessToken = "XXXXXXXXXXXXXXXXXXX"; //replace with your NEW Bit.ly TOKEN
+var url = "https://github.com/s0312256/Web233-Week13.git/index.html?list="+ shoppinglist;   //replace YOURGITHUBURL with your Github repo URL example: Konkollist.github.io
+   var accessToken = "c7896b9f5197a007021b03cb853f65dbc567c3d2"; //replace with your NEW Bit.ly TOKEN
    var params = {
        "long_url" : url          
    };
