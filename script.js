@@ -12,6 +12,47 @@ window.onload = function() {
     clearFocus();
 };
 
+function passlist()
+{
+var url = "YOURGITHUBURL/index.html?list="+ shoppinglist;   //replace YOURGITHUBURL with your Github repo URL example: Konkollist.github.io
+   var accessToken = "XXXXXXXXXXXXXXXXXXX"; //replace with your NEW Bit.ly TOKEN
+   var params = {
+       "long_url" : url          
+   };
+   $.ajax({
+       url: "https://api-ssl.bitly.com/v4/shorten",
+       cache: false,
+       dataType: "json",
+       method: "POST",
+       contentType: "application/json",
+       beforeSend: function (xhr) {
+           xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+       },
+       data: JSON.stringify(params)
+	}).done(function(data) {
+		getshorturl = 1;
+		document.getElementById("sharelist").innerHTML = "The URL to share the list:\n" + data.link;
+		copyToClipboard(data.link);
+	}).fail(function(data) {
+		document.getElementById("sharelist").innerHTML = "The URL to share the list:\n" + url;
+		copyToClipboard(URL);
+	});
+}
+
+function copyToClipboard(text) {
+ var passbyurl = document.createElement("textarea");
+ passbyurl.value = text;
+ document.body.appendChild(passbyurl);
+ passbyurl.focus();
+ passbyurl.select();
+ document.execCommand("copy");
+ document.body.removeChild(passbyurl);
+ alert("URL has been copied. Ready to share: " + text);
+ //window.prompt("Copy & Share List!", text);
+  
+}
+
+
 //v 4.0 save / get array via cookies
 //v 4.0 read cookie on load and display
 
