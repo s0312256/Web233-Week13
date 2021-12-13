@@ -98,7 +98,7 @@ function copyToClipboard(text) {
 
 function about()
 {
-    alert("Welcome to 'Shopping List' App!\n\nCreated by Rock Valley College\n**Javascript(Web233) Students**\n\nQuestions?\nemail Professor Chuck Konkol\nc.konkol@rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
+    alert("Welcome to 'Vacation List' App!\n\nA place to save all your Dream Destinations\n\nQuestions?\nemail Ariana Foley\ns0312256@student.rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
     
 }
 //read cookie and return
