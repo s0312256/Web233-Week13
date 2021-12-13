@@ -98,7 +98,7 @@ function copyToClipboard(text) {
 
 function about()
 {
-    alert("Welcome to 'Vacation List' App!\n\nA place to save all your Dream Destinations\n\nQuestions?\nemail Ariana Foley\ns0312256@student.rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
+    alert("Welcome to Vacation List App!\n\nA place to save all your Dream Destinations\n\nQuestions?\nemail Ariana Foley\ns0312256@student.rockvalleycollege.edu\n\nRegister @ RockValleyCollege.edu");
     
 }
 //read cookie and return
